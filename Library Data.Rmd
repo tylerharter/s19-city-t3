@@ -1,0 +1,114 @@
+---
+title: "Library Data"
+author: "Sally Hu"
+date: "2019/2/6"
+output: pdf_document
+---
+
+```{r Difference in expenditure and revenue for libraries in city of Madison}
+## import ggplot2, dplyr,magrittr,ggpubr
+library(ggplot2)
+library(dplyr)
+
+## import CSV file
+dataProject <- read.csv("spend.csv",header = TRUE)
+dfProject <- data.frame(dataProject)
+
+## barplot for whole dataset
+ggplot(data = dfProject,aes(x=Account.Type))+
+  geom_bar(fill="steelblue")+
+  xlab("Account.Type")+
+  ylab("Count")+
+  ggtitle("Finance for City of Madison")
+
+## extract library data from whole dataset
+dataLibrary <- dfProject[dfProject$X...Agency=="50 -  LIBRARY",]
+
+## barplot for library data
+counts <- table(dataLibrary$Account.Type)
+ggplot(data = dataLibrary)+
+  geom_bar(aes(x=dataLibrary$Account.Type),fill="steelblue")+
+  xlab("Account.Type")+
+  ylab("Count")+
+  ggtitle("Finance for Libraries in Madison")
+
+## barplot for different years expenditure and revenue of libraries
+dataRevenueLibrary <- dataLibrary[dataLibrary$Account.Type=="Revenue",]
+sumLibraryRevenue2015 <- sum(dataRevenueLibrary$X2015,na.rm = TRUE)
+sumLibraryRevenue2016 <- sum(dataRevenueLibrary$X2016,na.rm = TRUE)
+sumLibraryRevenue2017 <- sum(dataRevenueLibrary$X2017,na.rm = TRUE)
+sumLibraryRevenue2018 <- sum(dataRevenueLibrary$X2018,na.rm = TRUE)
+totalRevenueSum <- sum(sumLibraryRevenue2015,sumLibraryRevenue2016,sumLibraryRevenue2017,sumLibraryRevenue2018)
+
+dataExpenseLibrary <- dataLibrary[dataLibrary$Account.Type=="Expense",]
+sumLibraryExpense2015 <- sum(dataExpenseLibrary$X2015,na.rm = TRUE)
+sumLibraryExpense2016 <- sum(dataExpenseLibrary$X2016,na.rm = TRUE)
+sumLibraryExpense2017 <- sum(dataExpenseLibrary$X2017,na.rm = TRUE)
+sumLibraryExpense2018 <- sum(dataExpenseLibrary$X2018,na.rm = TRUE)
+totalExpenseSum <- sum(sumLibraryExpense2015,sumLibraryExpense2016,sumLibraryExpense2017,sumLibraryExpense2018)
+
+dfLibrary <- data.frame(totalRevenueSum,totalExpenseSum)
+counts <- table(dfLibrary)
+barplot(counts)
+
+  ##group_by(Account.Type)
+#ggplot(data = by_account_type,aes())+
+  #geom_bar(fill="steelblue")
+
+```
+
+```{r Revenue Distribution for Library}
+criteria <- dfProject$X...Agency=="50 -  LIBRARY"
+libraryData <- dfProject[criteria==TRUE,]
+criteria_revenue <- libraryData$Account.Type=="Revenue"
+libraryData_Revenue <- libraryData[criteria_revenue==TRUE,]
+libraryData_Revenue[is.na(libraryData_Revenue)]<-0
+counts <- table(libraryData_Revenue$Object)
+new_counts <- sort(counts,decreasing = TRUE)
+top15_counts <- head(new_counts,15)
+barplot(top15_counts,las=2,cex.names = 0.5,col = "blue",density = 10,main = "Top 15 Revenue Distribution for Library")
+```
+
+```{r}
+criteria_expense <- libraryData$Account.Type=="Expense"
+libraryData_Expense <- libraryData[criteria_expense==TRUE,]
+libraryData_Expense[is.na(libraryData_Expense)]<-0
+counts1 <- table(libraryData_Expense$Object)
+new_counts1 <- sort(counts1,decreasing = TRUE)
+new_counts1
+top15_counts1 <- head(new_counts1,15)
+barplot(top15_counts1,las=2,cex.names = 0.5,col = "blue",density = 10,main = "Top 15 Expenditure Distribution for Library")
+```
+
+```{r}
+library(plotrix)
+library(formattable)
+top5_counts1 <- head(new_counts1,5)
+onlycounts_vector <- unname(top5_counts1)
+percent_area <- onlycounts_vector/length(libraryData_Expense)
+pie3D(percent_area,c("A","B","C","D","E"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
